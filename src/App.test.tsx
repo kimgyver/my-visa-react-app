@@ -1,14 +1,16 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "./App";
-import { AppProvider } from "./context/AppContext";
+import { Provider } from "react-redux";
+import store from "./redux/store"; // Import your Redux store
 import "@testing-library/jest-dom";
 
 describe("App Component", () => {
   test("resets the counter and items", () => {
+    // Wrap the App component with the Redux Provider
     render(
-      <AppProvider>
+      <Provider store={store}>
         <App />
-      </AppProvider>
+      </Provider>
     );
 
     const incrementButton = screen.getByText(/increment/i);
@@ -21,7 +23,7 @@ describe("App Component", () => {
     fireEvent.click(addItemButton);
 
     // Check counter and items
-    expect(screen.getByText(/counter: 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/count: 2/i)).toBeInTheDocument();
     expect(screen.getByText(/item 1/i)).toBeInTheDocument();
 
     // Reset
@@ -29,7 +31,7 @@ describe("App Component", () => {
     fireEvent.click(resetButton);
 
     // Check reset
-    expect(screen.getByText(/counter: 0/i)).toBeInTheDocument();
+    expect(screen.getByText(/count: 0/i)).toBeInTheDocument();
     expect(screen.queryByText(/item 1/i)).toBeNull();
   });
 });
