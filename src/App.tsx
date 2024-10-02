@@ -1,8 +1,11 @@
 import React from "react";
-import { useAppContext } from "./context/AppContext";
+import { useSelector, useDispatch } from "react-redux";
+import { increment, addItem, reset, AppState } from "./redux/appState";
 
 const App: React.FC = () => {
-  const { state, dispatch } = useAppContext();
+  const counter = useSelector((state: AppState) => state.counter);
+  const items = useSelector((state: AppState) => state.items);
+  const dispatch = useDispatch();
 
   const handleAddItem = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -10,22 +13,22 @@ const App: React.FC = () => {
     const input = form.elements.namedItem("itemInput") as HTMLInputElement;
 
     if (input.value) {
-      dispatch({ type: "addItem", payload: input.value });
-      input.value = ""; // Clear input
+      dispatch(addItem(input.value));
+      input.value = "";
     }
   };
 
   const handleReset = () => {
-    dispatch({ type: "reset" });
+    dispatch(reset());
   };
 
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="flex items-center space-x-4 mb-4">
-        <h1 className="text-2xl">Count: {state.counter}</h1>
+        <h1 className="text-2xl">Count: {counter}</h1>
         <button
           className="bg-blue-500 text-white px-4 py-2"
-          onClick={() => dispatch({ type: "increment" })}
+          onClick={() => dispatch(increment())}
         >
           Increment
         </button>
@@ -42,7 +45,7 @@ const App: React.FC = () => {
       </form>
 
       <ul>
-        {state.items.map((item, index) => (
+        {items.map((item, index) => (
           <li key={index} className="text-lg">
             {item}
           </li>
