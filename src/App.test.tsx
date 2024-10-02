@@ -1,12 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "./App";
 import { Provider } from "react-redux";
-import store from "./redux/store"; // Import your Redux store
+import store from "./redux/store";
 import "@testing-library/jest-dom";
 
 describe("App Component", () => {
   test("resets the counter and items", () => {
-    // Wrap the App component with the Redux Provider
     render(
       <Provider store={store}>
         <App />
