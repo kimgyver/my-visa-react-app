@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { increment, addItem, reset, AppState } from "./redux/appState";
 
-const App: React.FC = () => {
+const App1: React.FC = () => {
   const counter = useSelector((state: AppState) => state.counter);
   const items = useSelector((state: AppState) => state.items);
   const dispatch = useDispatch();
@@ -62,4 +62,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default App1;
