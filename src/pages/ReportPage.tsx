@@ -3,23 +3,28 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Menu } from "../components/Menu";
+import { Back } from "../components/back";
 import { ReportFieldsTable } from "../components/ReportFieldsTable";
 import { CustomiseFieldsModal } from "../components/CustomiseFieldsModal";
+import { Report, AppState, Field } from "../types";
 import {
-  Report,
-  AppState,
   setCurrentReportId,
   reportUpdateFields,
-  reportUpdateName
+  reportUpdateName,
+  reportUpdateStatementCycle
 } from "../redux/appState";
+import { hasStateChanged } from "../redux/utils";
+import { IconArea } from "../components/IconArea";
 
 const ReportPage: React.FC = () => {
   const [isCustomiseModalOpen, setCustomiseModalOpen] = useState(false);
   const [reportName, setReportName] = useState("");
+  const [statementCycle, setStatementCycle] = useState("yesterday");
   const { id } = useParams();
+  const currentReportId = id || "";
   const reports = useSelector((state: AppState) => state.reports);
   const report = reports.find(report => report.id === id);
-  const [fields, setFields] = useState(report?.fields);
+  const [fields, setFields] = useState(report?.fields || []);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -28,7 +33,10 @@ const ReportPage: React.FC = () => {
       const report = reports.find(
         (report: Report) => report.id.toString() === id?.toString()
       );
-      setReportName(report?.name);
+      if (report) {
+        setReportName(report?.name);
+        setStatementCycle(report?.statementCycle);
+      }
     }
   }, [id]);
 
@@ -40,18 +48,34 @@ const ReportPage: React.FC = () => {
     );
   };
 
-  const reorderFields = (newFields: object) => {
+  const reorderFields = (newFields: Field[]) => {
     setFields(newFields);
   };
 
-  const currentReportId = useSelector(
-    (state: AppState) => state.currentReportId
-  );
   const handleSaveReport = () => {
-    console.log("save");
+    if (
+      !hasStateChanged(report, {
+        ...report,
+        fields,
+        name: reportName,
+        statementCycle
+      })
+    ) {
+      console.log("No changes");
+    }
 
-    dispatch(reportUpdateFields(currentReportId, fields));
-    dispatch(reportUpdateName(currentReportId, reportName));
+    if (hasStateChanged(report?.fields, fields)) {
+      dispatch(reportUpdateFields(currentReportId, fields));
+      console.log("fields change saved");
+    }
+    if (hasStateChanged(report?.name, reportName)) {
+      dispatch(reportUpdateName(currentReportId, reportName));
+      console.log("name change saved");
+    }
+    if (hasStateChanged(report?.statementCycle, statementCycle)) {
+      dispatch(reportUpdateStatementCycle(currentReportId, statementCycle));
+      console.log("statementCycle change saved");
+    }
   };
 
   const handleRunReport = () => {};
@@ -59,37 +83,56 @@ const ReportPage: React.FC = () => {
   return (
     <div>
       <Header />
-      <div>
-        <Menu />
-        <div className="p-4">
-          <h1 className="text-2xl font-bold">Spend Report</h1>
-          <ReportFieldsTable fields={fields.filter(field => field.visible)} />
-          <button
-            onClick={() => setCustomiseModalOpen(true)}
-            className="mt-4 p-2 bg-blue-500 text-white"
-          >
-            Customise fields
-          </button>
+      <Menu />
+      <div className="flex">
+        <IconArea />
+        <div>
+          <Back />
+          <div className="p-4">
+            <h1 className="text-2xl font-bold">{reportName}</h1>
+            <ReportFieldsTable fields={fields.filter(field => field.visible)} />
+            <button
+              onClick={() => setCustomiseModalOpen(true)}
+              className="mt-4 p-2 bg-blue-500 text-white"
+            >
+              Customise fields
+            </button>
 
-          {isCustomiseModalOpen && (
-            <CustomiseFieldsModal
-              fields={fields}
-              onClose={() => setCustomiseModalOpen(false)}
-              onToggleField={toggleFieldVisibility}
-              onReorderFields={reorderFields}
-            />
-          )}
-
-          <div className="mb-4">
-            <div className="mb-4">
-              <label className="block font-semibold">Report Name:</label>
-              <input
-                type="text"
-                value={reportName}
-                onChange={e => setReportName(e.target.value)}
-                className="w-full p-2 border rounded"
-                placeholder="Enter report name"
+            {isCustomiseModalOpen && (
+              <CustomiseFieldsModal
+                fields={fields}
+                onClose={() => setCustomiseModalOpen(false)}
+                onToggleField={toggleFieldVisibility}
+                onReorderFields={reorderFields}
               />
+            )}
+
+            <div className="flex justify-start mt-8 mb-8">
+              <div className="mr-8">
+                <label className="block font-semibold">Report Name:</label>
+                <input
+                  type="text"
+                  value={reportName}
+                  onChange={e => setReportName(e.target.value)}
+                  className="p-2 border rounded"
+                  placeholder="Enter report name"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold">Statement Cycle:</label>
+                <select
+                  value={statementCycle}
+                  onChange={e => setStatementCycle(e.target.value)}
+                  className="p-2 border rounded"
+                >
+                  <option value="yesterday">Yesterday</option>
+                  <option value="last3days">Last 3 days</option>
+                  <option value="lastweek">Last week</option>
+                  <option value="last2weeks">Last 2 weeks</option>
+                  <option value="lastStatement">Last statement period</option>
+                </select>
+              </div>
             </div>
 
             <div className="flex justify-between">

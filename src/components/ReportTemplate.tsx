@@ -1,4 +1,4 @@
-import { ReportTemplateType } from "../redux/appState";
+import { ReportTemplateType } from "../types";
 
 interface ReportTemplateProps {
   reportTemplate: ReportTemplateType;

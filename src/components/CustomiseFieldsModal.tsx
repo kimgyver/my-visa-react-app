@@ -1,11 +1,6 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
-
-interface Field {
-  id: string;
-  label: string;
-  visible: boolean;
-}
+import { Field } from "../types";
 
 interface CustomiseFieldsModalProps {
   fields: Field[];
@@ -17,7 +12,7 @@ interface CustomiseFieldsModalProps {
 const FieldItem: React.FC<{
   field: Field;
   onToggleField: (fieldId: string) => void;
-  index: string;
+  index: number;
 }> = ({ field, onToggleField, index }) => {
   const [{ isDragging }, drag] = useDrag({
     type: "FIELD",
@@ -30,7 +25,7 @@ const FieldItem: React.FC<{
   return (
     <div
       ref={drag}
-      className="flex items-center justify-between p-2 border-b"
+      className="DRAG-ITEM flex justify-between p-2 border-b"
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <input
@@ -63,12 +58,11 @@ export const CustomiseFieldsModal: React.FC<CustomiseFieldsModalProps> = ({
       const hoverIndex = fields.findIndex((field, index) => {
         // Get the DOM element's bounding rectangle
         const rect = document
-          .getElementsByClassName(
-            "flex items-center justify-between p-2 border-b"
-          )
+          .getElementsByClassName("DRAG-ITEM")
           [index]?.getBoundingClientRect();
 
-        if (!rect) return false; // Ensure the rect is valid
+        if (!rect) return false;
+        if (!hoverBoundingRect) return false;
 
         // Determine if the mouse position is over the current item
         return (
@@ -108,7 +102,7 @@ export const CustomiseFieldsModal: React.FC<CustomiseFieldsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded shadow-lg w-96">
+      <div className="bg-white p-6 w-96">
         <h2 className="text-xl font-bold mb-4">Customise fields</h2>
         <div ref={drop}>
           {fields.map((field, index) => (

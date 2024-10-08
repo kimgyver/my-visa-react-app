@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-import { AppState } from "../redux/appState";
+import { AppState } from "../types";
 
 export const ReportList = () => {
   const reports = useSelector((state: AppState) => state.reports);
@@ -12,7 +11,7 @@ export const ReportList = () => {
   };
 
   return (
-    <div className="p-4 shadow-md border-2 border-gray-200">
+    <div className="p-4 border">
       <table className="min-w-full">
         <thead>
           <tr>
@@ -34,7 +33,7 @@ export const ReportList = () => {
               </td>
               <td>
                 <button
-                  className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                  className="bg-blue-500 text-white px-2 py-1 rounded"
                   onClick={() => handleNavigate(report.id.toString())}
                 >
                   {" "}

@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { AppState } from "../redux/appState";
+import { AppState } from "../types";
 
 interface ReportTableProps {
   fields: { id: string; label: string }[];
@@ -13,7 +13,7 @@ export const ReportFieldsTable: React.FC<ReportTableProps> = ({ fields }) => {
   const report = reports.find(report => report.id === currentReportId);
 
   return (
-    <table className="table-auto w-full mt-4">
+    <table className="mt-4 min-w-full">
       <thead>
         <tr>
           {fields.map(field => (
