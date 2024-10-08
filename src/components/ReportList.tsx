@@ -14,27 +14,29 @@ export const ReportList = () => {
     <table className="mt-4 min-w-full">
       <thead>
         <tr>
-          <th className="text-left px-4 py-2 border">Report name</th>
-          <th className="text-left px-4 py-2 border">Report Schedule</th>
-          <th className="text-left px-4 py-2 border">Last edited date</th>
-          <th className="text-left px-4 py-2 border">Status</th>
-          <th className="text-left px-4 py-2 border">Action</th>
+          <th className="px-4 py-2 border">Report name</th>
+          <th className="px-4 py-2 border">Report Schedule</th>
+          <th className="px-4 py-2 border">Last edited date</th>
+          <th className="px-4 py-2 border">Status</th>
+          <th className="px-4 py-2 border">Action</th>
         </tr>
       </thead>
       <tbody>
         {reports.map((report, index) => (
-          <tr key={index} className="border-t">
+          <tr key={index}>
             <td className="px-4 py-2 border">{report.name}</td>
-            <td className="px-4 py-2 border">{report.schedule}</td>
-            <td className="px-4 py-2 border">{report.lastEdited}</td>
+            <td className="px-4 py-2 border text-center">{report.schedule}</td>
+            <td className="px-4 py-2 border text-center">
+              {report.lastEdited}
+            </td>
             <td
-              className={`px-4 py-2 border ${
+              className={`px-4 py-2 border text-center ${
                 report.status === "Expired" ? "text-red-500" : ""
               }`}
             >
               {report.status}
             </td>
-            <td className="px-4 py-2 border">
+            <td className="px-4 py-2 border text-center">
               <button
                 className="bg-blue-500 text-white px-2 py-1 rounded"
                 onClick={() => handleNavigate(report.id.toString())}
