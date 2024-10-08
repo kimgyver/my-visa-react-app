@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import moment from "moment";
 import { Header } from "../components/Header";
 import { Menu } from "../components/Menu";
 import { Back } from "../components/Back";
@@ -85,7 +86,7 @@ const ReportPage: React.FC = () => {
     dispatch(
       reportUpdateLastEdited(
         currentReportId,
-        new Date().toISOString().slice(0, 16)
+        moment().format("YYYY-MM-DDTHH:mm")
       )
     );
   };
