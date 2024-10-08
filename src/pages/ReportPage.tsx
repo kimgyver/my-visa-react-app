@@ -114,7 +114,7 @@ const ReportPage: React.FC = () => {
                   type="text"
                   value={reportName}
                   onChange={e => setReportName(e.target.value)}
-                  className="p-2 border rounded"
+                  className="p-2 w-[400px] border rounded"
                   placeholder="Enter report name"
                 />
               </div>
