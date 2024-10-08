@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Menu } from "../components/Menu";
-import { Back } from "../components/back";
+import { Back } from "../components/Back";
 import { ReportFieldsTable } from "../components/ReportFieldsTable";
 import { CustomiseFieldsModal } from "../components/CustomiseFieldsModal";
 import { Report, AppState, Field } from "../types";
@@ -11,7 +11,8 @@ import {
   setCurrentReportId,
   reportUpdateFields,
   reportUpdateName,
-  reportUpdateStatementCycle
+  reportUpdateStatementCycle,
+  reportUpdateLastEdited
 } from "../redux/appState";
 import { hasStateChanged } from "../redux/utils";
 import { IconArea } from "../components/IconArea";
@@ -23,8 +24,9 @@ const ReportPage: React.FC = () => {
   const { id } = useParams();
   const currentReportId = id || "";
   const reports = useSelector((state: AppState) => state.reports);
-  const report = reports.find(report => report.id === id);
-  const [fields, setFields] = useState(report?.fields || []);
+  const originalReport = reports.find(report => report.id === id);
+  const [fields, setFields] = useState(originalReport?.fields || []);
+  const [valuesChanged, setValuesChanged] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -40,6 +42,17 @@ const ReportPage: React.FC = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    setValuesChanged(
+      hasStateChanged(originalReport, {
+        ...originalReport,
+        fields,
+        name: reportName,
+        statementCycle
+      })
+    );
+  }, [originalReport, reportName, statementCycle, fields]);
+
   const toggleFieldVisibility = (fieldId: string) => {
     setFields(prevFields =>
       prevFields.map(field =>
@@ -53,29 +66,28 @@ const ReportPage: React.FC = () => {
   };
 
   const handleSaveReport = () => {
-    if (
-      !hasStateChanged(report, {
-        ...report,
-        fields,
-        name: reportName,
-        statementCycle
-      })
-    ) {
+    if (!valuesChanged) {
       console.log("No changes");
     }
 
-    if (hasStateChanged(report?.fields, fields)) {
+    if (hasStateChanged(originalReport?.fields, fields)) {
       dispatch(reportUpdateFields(currentReportId, fields));
       console.log("fields change saved");
     }
-    if (hasStateChanged(report?.name, reportName)) {
+    if (hasStateChanged(originalReport?.name, reportName)) {
       dispatch(reportUpdateName(currentReportId, reportName));
       console.log("name change saved");
     }
-    if (hasStateChanged(report?.statementCycle, statementCycle)) {
+    if (hasStateChanged(originalReport?.statementCycle, statementCycle)) {
       dispatch(reportUpdateStatementCycle(currentReportId, statementCycle));
       console.log("statementCycle change saved");
     }
+    dispatch(
+      reportUpdateLastEdited(
+        currentReportId,
+        new Date().toISOString().slice(0, 16)
+      )
+    );
   };
 
   const handleRunReport = () => {};
@@ -139,7 +151,10 @@ const ReportPage: React.FC = () => {
               <div className="space-x-4">
                 <button
                   onClick={handleSaveReport}
-                  className="p-2 bg-green-500 text-white rounded"
+                  className={`p-2 ${
+                    valuesChanged ? "bg-green-500" : "bg-green-300"
+                  } text-white rounded`}
+                  disabled={!valuesChanged}
                 >
                   Save Report
                 </button>

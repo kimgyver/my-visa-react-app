@@ -6,6 +6,7 @@ const REPORTS_SET_REPORT_CURRENT_ID = "REPORTS/SET_CURRENT_REPORT_ID";
 const REPORTS_UPDATE_NAME = "REPORTS/UPDATE_NAME";
 const REPORTS_UPDATE_FIELDS = "REPORTS/UPDATE_FIELDS";
 const REPORTS_UPDATE_STATEMENT_CYCLE = "REPORTS/UPDATE_STATEMENT_CYCLE";
+const REPORTS_UPDATE_LAST_EDITED = "REPORTS/UPDATE_LAST_EDITED";
 
 export const appReducer = (
   state: AppState = initialState,
@@ -16,6 +17,7 @@ export const appReducer = (
       fields: Field[];
       name: string;
       statementCycle: string;
+      lastEdited: string;
     };
   }
 ) => {
@@ -58,6 +60,18 @@ export const appReducer = (
             : report
         )
       };
+    case REPORTS_UPDATE_LAST_EDITED:
+      return {
+        ...state,
+        reports: state.reports.map(report =>
+          report.id === action.payload.reportId
+            ? {
+                ...report,
+                lastEdited: action.payload.lastEdited
+              }
+            : report
+        )
+      };
     default:
       return state;
   }
@@ -85,4 +99,12 @@ export const reportUpdateStatementCycle = (
 export const reportUpdateFields = (reportId: string, fields: Field[]) => ({
   type: REPORTS_UPDATE_FIELDS,
   payload: { reportId, fields }
+});
+
+export const reportUpdateLastEdited = (
+  reportId: string,
+  lastEdited: string
+) => ({
+  type: REPORTS_UPDATE_LAST_EDITED,
+  payload: { reportId, lastEdited }
 });

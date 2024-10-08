@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppState } from "../types";
+import moment from "moment";
 
 export const ReportList = () => {
   const reports = useSelector((state: AppState) => state.reports);
@@ -27,7 +28,7 @@ export const ReportList = () => {
             <td className="px-4 py-2 border">{report.name}</td>
             <td className="px-4 py-2 border text-center">{report.schedule}</td>
             <td className="px-4 py-2 border text-center">
-              {report.lastEdited}
+              {moment(report.lastEdited).format("MMM DD, YYYY")}
             </td>
             <td
               className={`px-4 py-2 border text-center ${
